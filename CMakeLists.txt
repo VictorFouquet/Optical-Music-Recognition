@@ -11,4 +11,4 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 add_subdirectory(external)
 add_subdirectory(src/lib)
 
-target_link_libraries(${PROJECT_NAME} grid)
+target_link_libraries(${PROJECT_NAME} grid region_of_interest)
