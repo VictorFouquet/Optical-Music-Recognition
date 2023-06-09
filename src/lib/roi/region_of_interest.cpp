@@ -42,7 +42,6 @@ int RegionOfInterest::get_last_interesting_row_index()
 {
     for (int i = m_height - 1; i >= 0; i++)
     {
-        std::cout << i << std::endl;
         if (m_horizontal_distrib[i])
             return i;
     }
