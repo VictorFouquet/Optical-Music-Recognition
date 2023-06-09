@@ -18,11 +18,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-if(${UNIT_TEST})
-    add_subdirectory(external)
-endif()
+add_subdirectory(external)
 
 add_subdirectory(utils)
 add_subdirectory(src/lib)
 
-target_link_libraries(${PROJECT_NAME} grid region_of_interest ppm_utils)
+target_link_libraries(${PROJECT_NAME}
+    grid
+    region_of_interest
+    rle_parser
+    ppm_utils
+)
