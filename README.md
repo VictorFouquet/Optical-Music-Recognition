@@ -21,3 +21,11 @@ A ROI is composed of :
 - one binary grid containing the region's raw data
 - one x-y offset vector (computed from the ROI's upper left corner's coordinates, the origin [0, 0] being the global image's upper left corner)
 - two histograms, storing the quantity of black pixel in each rows and columns respectively
+
+### RLE parser
+
+The RLE parser is in charge of extracting significant data from the RLE string.
+
+It fills in a 2D grid and computes horizontal - vertical distributions as it reads the RLE string.
+
+It uses the generated 2d grid and distributions to create the global region of interest.
