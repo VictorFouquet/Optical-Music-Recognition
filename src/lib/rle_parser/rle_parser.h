@@ -1,6 +1,7 @@
 #ifndef RLE_PARSER_H
 #define RLE_PARSER_H
 
+#include <memory>
 #include <string>
 #include <vector>
 #include "grid.h"
@@ -15,10 +16,9 @@ public:
 
     std::string get_rle();
     RegionOfInterest get_roi();
+    void parse_source(std::shared_ptr<Grid> grid);
 
 private:
-    bool rle_to_roi();
-
     int m_width, m_height;
     std::string m_rle_encoded;
     bool m_parsed;
