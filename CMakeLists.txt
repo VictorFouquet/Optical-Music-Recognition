@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21.2)
 
-set(DEBUG_IMG TRUE)
+set(DEBUG_IMG FALSE)
 set(UNIT_TEST TRUE)
 
 if (${DEBUG_IMG})
@@ -30,5 +30,6 @@ target_link_libraries(${PROJECT_NAME}
     grid
     region_of_interest
     rle_parser
+    optical_music_recognition
     ppm_utils
 )
