@@ -1,5 +1,4 @@
 #include <math.h>
-#include <iostream>
 
 #include "rle_parser.h"
 
@@ -12,18 +11,11 @@ RLEParser::~RLEParser() = default;
 
 std::string RLEParser::get_rle() { return m_rle_encoded; }
 
-RegionOfInterest RLEParser::get_roi()
-{
-    if (!m_parsed)
-        m_parsed = rle_to_roi();
-    return m_roi;
-}
+RegionOfInterest RLEParser::get_roi() { return m_roi; }
 
-bool RLEParser::rle_to_roi()
+void RLEParser::parse_source(std::shared_ptr<Grid> grid)
 {
     int current_index = 0;
-
-    std::vector<std::vector<bool>> pixels;
     std::vector<int> vertical_hist(m_width, 0);
     std::vector<int> horizontal_hist(m_height, 0);
     int x = 0, y = -1;
@@ -41,15 +33,15 @@ bool RLEParser::rle_to_roi()
             current_index++;
         }
         int qty = stoi(qty_str);
-
         for (int i = 0; i < qty; i++)
         {
             if (x == 0)
             {
                 y++;
-                pixels.push_back({});
+                grid->append_empty_row();
             }
-            pixels.back().push_back(px_value);
+            grid->append_cell(px_value);
+
             if (!px_value)
             {
                 vertical_hist[x]++;
@@ -61,14 +53,8 @@ bool RLEParser::rle_to_roi()
         current_index++;
     }
 
-    if (pixels.empty())
-        return false;
-
     m_roi = RegionOfInterest(
-        Grid(m_width, m_height, pixels),
         vertical_hist, horizontal_hist,
-        0, 0
+        0, 0, m_width, m_height
     );
-
-    return true;
 }

@@ -7,11 +7,16 @@ Grid::Grid(int width, int height, std::vector<std::vector<bool>> rows)
     m_height = height;
     m_rows = rows;
 }
+Grid::Grid(int width, int height) :
+    m_width(width), m_height(height) {}
 
 Grid::Grid() = default;
 Grid::~Grid() = default;
 
 bool Grid::empty() { return m_rows.empty(); }
+
+void Grid::append_empty_row() { m_rows.push_back({}); }
+void Grid::append_cell(bool value) { m_rows.back().push_back(value); }
 
 int Grid::get_width() { return m_rows[0].size(); }
 int Grid::get_height() { return m_rows.size(); }
