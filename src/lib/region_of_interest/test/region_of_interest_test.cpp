@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "region_of_interest.h"
+#include "grid.h"
 
 std::vector<std::vector<bool>> raw_data = {
     { true, true,  true,  true },
@@ -8,13 +9,13 @@ std::vector<std::vector<bool>> raw_data = {
     { true, true,  true,  true },
 };
 std::vector<int> vertical_distrib = { 0, 2, 1, 0 };
-std::vector<int> horizontal_distrib = { 0, 1, 2, 1 };
+std::vector<int> horizontal_distrib = { 0, 1, 2, 0 };
 Grid grid = Grid(raw_data[0].size(), raw_data.size(), raw_data);
 
 
 TEST(ROI_get_width_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
         (roi.get_width(), exit(0)),
         ::testing::ExitedWithCode(0),
@@ -25,7 +26,7 @@ TEST(ROI_get_width_test, ROIGTest)
 
 TEST(ROI_get_height_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
         (roi.get_height(), exit(0)),
         ::testing::ExitedWithCode(0),
@@ -37,30 +38,30 @@ TEST(ROI_get_height_test, ROIGTest)
 TEST(ROI_get_x_grid_offset_test, ROIGTest)
 {
     int x_offset = 2;
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, x_offset , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, x_offset , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
-        (roi.get_grid_x_offset(), exit(0)),
+        (roi.get_x_offset(), exit(0)),
         ::testing::ExitedWithCode(0),
         ".*"
     );
-    ASSERT_EQ(roi.get_grid_x_offset(), x_offset);
+    ASSERT_EQ(roi.get_x_offset(), x_offset);
 }
 
 TEST(ROI_get_y_grid_offset_test, ROIGTest)
 {
     int y_offset = 3;
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0, y_offset);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0, y_offset, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
-        (roi.get_grid_y_offset(), exit(0)),
+        (roi.get_y_offset(), exit(0)),
         ::testing::ExitedWithCode(0),
         ".*"
     );
-    ASSERT_EQ(roi.get_grid_y_offset(), y_offset);
+    ASSERT_EQ(roi.get_y_offset(), y_offset);
 }
 
 TEST(ROI_get_vertical_distrib_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
         (roi.get_vertical_distrib(), exit(0)),
         ::testing::ExitedWithCode(0),
@@ -75,7 +76,7 @@ TEST(ROI_get_vertical_distrib_test, ROIGTest)
 
 TEST(ROI_get_horizontal_distrib_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
         (roi.get_horizontal_distrib(), exit(0)),
         ::testing::ExitedWithCode(0),
@@ -88,72 +89,46 @@ TEST(ROI_get_horizontal_distrib_test, ROIGTest)
     }
 }
 
-TEST(ROI_get_grid_test, ROIGTest)
-{
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0, 0);
-    ASSERT_EXIT(
-        (roi.get_grid(), exit(0)),
-        ::testing::ExitedWithCode(0),
-        ".*"
-    );
-    
-    int mismatch = 0;
-    for (int y = 0; y < roi.get_height(); y++)
-    {
-        for (int x = 0; x < roi.get_width(); x++)
-        {
-            ASSERT_EXIT(
-                (roi.get_grid().get_pixel(x, y), exit(0)),
-                ::testing::ExitedWithCode(0),
-                ".*"
-            );
-            if (roi.get_grid().get_pixel(x, y) != raw_data[y][x])
-                mismatch ++;
-        }
-    }
-    ASSERT_EQ(mismatch, 0);
-}
-
 TEST(ROI_get_first_interesting_row_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
-        (roi.get_first_interesting_row_index(), exit(0)),
+        (roi.get_first_interesting_row_index([](int x) -> bool { return true; }), exit(0)),
         ::testing::ExitedWithCode(0),
         ".*"
     );
-    ASSERT_EQ(roi.get_first_interesting_row_index(), 1);
+    ASSERT_EQ(roi.get_first_interesting_row_index([](int x) -> bool { return x != 0; }), 1);
 }
 
 TEST(ROI_get_last_interesting_row_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
-        (roi.get_last_interesting_row_index(), exit(0)),
+        (roi.get_last_interesting_row_index([](int x) -> bool { return true; }), exit(0)),
         ::testing::ExitedWithCode(0),
         ".*"
     );
-    ASSERT_EQ(roi.get_last_interesting_row_index(), 3);
+    ASSERT_EQ(roi.get_last_interesting_row_index([](int x) -> bool { return x != 0; }), 3);
 }
 
 TEST(ROI_get_first_interesting_col_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
-        (roi.get_first_interesting_col_index(), exit(0)),
+        (roi.get_first_interesting_col_index([](int x) -> bool { return true; }), exit(0)),
         ::testing::ExitedWithCode(0),
         ".*"
     );
-    ASSERT_EQ(roi.get_first_interesting_col_index(), 1);
+    ASSERT_EQ(roi.get_first_interesting_col_index([](int x) -> bool { return x != 0; }), 1);
 }
 
 TEST(ROI_get_last_interesting_col_test, ROIGTest)
 {
-    RegionOfInterest roi = RegionOfInterest(grid, vertical_distrib, horizontal_distrib, 0 , 0);
+    RegionOfInterest roi = RegionOfInterest(vertical_distrib, horizontal_distrib, 0 , 0, grid.get_width(), grid.get_height());
     ASSERT_EXIT(
-        (roi.get_last_interesting_col_index(), exit(0)),
+        (roi.get_last_interesting_col_index([](int x) -> bool { return true; }), exit(0)),
         ::testing::ExitedWithCode(0),
         ".*"
     );
-    ASSERT_EQ(roi.get_last_interesting_col_index(), 3);
+    ASSERT_EQ(roi.get_last_interesting_col_index([](int x) -> bool { return x != 0; }), 3);
 }

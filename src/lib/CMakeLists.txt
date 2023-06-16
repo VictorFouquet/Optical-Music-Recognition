@@ -1,3 +1,3 @@
 add_subdirectory(grid)
-add_subdirectory(roi)
+add_subdirectory(region_of_interest)
 add_subdirectory(rle_parser)
